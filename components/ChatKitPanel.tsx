@@ -265,19 +265,21 @@ const chatkit = useChatKit({
   api: { getClientSecret },
 
   theme: {
-    colorScheme: theme,
-    density: "compact",
-    radius: "soft",
-    typography: {
-      baseSize: 14,
+  colorScheme: theme,
+  density: "compact",
+  radius: "soft",
+  typography: {
+    baseSize: 14,
+  },
+  color: {
+    accent: {
+      primary: "#3b82f6",
+      level: 1, // <-- toegevoegd om typefout te verhelpen
     },
-    color: {
-      accent: {
-        primary: "#3b82f6",
-      },
-    },
-    ...getThemeConfig(theme), // laat dit staan als fallback
-  }, // 👈 sluit het theme-object hier af ✅
+  },
+  ...getThemeConfig(theme),
+},
+
 
   startScreen: {
     greeting: GREETING,
