@@ -5,14 +5,14 @@ import type { ChatKitOptions } from "@openai/chatkit";
 
 const options: ChatKitOptions = {
   api: {
-    url: "/api/chat", // standaard route van ChatKit Starter
+    url: "/api/chat", // standaard endpoint uit ChatKit starter
   },
   theme: {
     colorScheme: "light",
-    density: "compact", // compactere layout
-    radius: "md", // iets minder afgerond
+    radius: "md",
+    density: "compact", // compacte layout (kleinere marges)
     typography: {
-      baseSize: 14, // kleiner font
+      baseSize: 14, // kleiner lettertype
     },
     color: {
       accent: {
@@ -30,5 +30,6 @@ const options: ChatKitOptions = {
 };
 
 export default function App() {
+  // ✅ geef de opties gewoon als prop door
   return <Chat options={options} />;
 }
