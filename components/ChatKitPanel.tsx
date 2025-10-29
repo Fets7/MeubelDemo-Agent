@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
+import type { ChatKitOptions } from "@openai/chatkit";
 import {
   STARTER_PROMPTS,
   PLACEHOLDER_INPUT,
@@ -261,26 +262,85 @@ export function ChatKitPanel({
     [isWorkflowConfigured, setErrorState]
   );
 
-  const chatkit = useChatKit({
-    api: { getClientSecret },
+  // ------------------------
+  // Base options (your UI / theme settings)
+  // ------------------------
+  const baseOptions: ChatKitOptions = {
+    api: {
+      // TODO: configure your ChatKit API integration (URL, auth, uploads).
+    },
     theme: {
+      colorScheme: "light",
+      radius: "pill",
+      density: "normal",
+      typography: {
+        baseSize: 16,
+        fontFamily:
+          '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
+        fontFamilyMono:
+          'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
+        fontSources: [
+          {
+            family: "OpenAI Sans",
+            src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Regular.woff2",
+            weight: 400,
+            style: "normal",
+            display: "swap",
+          },
+          // add other font sources if needed
+        ],
+      },
+    },
+    composer: {
+      attachments: {
+        enabled: false,
+      },
+    },
+    startScreen: {
+      greeting: "Waar kan ik je vandaag mee helpen?",
+      prompts: [],
+    },
+  };
+
+  // Merge baseOptions with dynamic/runtime values and handlers used in this component.
+  const mergedOptions: ChatKitOptions = {
+    ...baseOptions,
+    api: {
+      // keep any baseOptions.api config but ensure getClientSecret is provided
+      ...(baseOptions.api ?? {}),
+      // use the getClientSecret function defined above
+      getClientSecret,
+    } as unknown as ChatKitOptions["api"],
+    theme: {
+      // allow runtime colorScheme and theme config from getThemeConfig to override
       colorScheme: theme,
+      ...(baseOptions.theme ?? {}),
       ...getThemeConfig(theme),
     },
     startScreen: {
+      // keep your base startScreen but override greeting and prompts from runtime constants
+      ...(baseOptions.startScreen ?? {}),
       greeting: GREETING,
       prompts: STARTER_PROMPTS,
     },
     composer: {
-      placeholder: PLACEHOLDER_INPUT,
+      ...(baseOptions.composer ?? {}),
       attachments: {
-        // Enable attachments
+        // we want attachments enabled here (overrides baseOptions)
         enabled: true,
+        ...(baseOptions.composer?.attachments ?? {}),
       },
+      placeholder: PLACEHOLDER_INPUT,
     },
+    // we still provide threadItemActions and handlers that existed previously
     threadItemActions: {
       feedback: false,
     },
+    // event handlers below will be added/re-used directly with useChatKit call further down
+  };
+
+  const chatkit = useChatKit({
+    ...mergedOptions,
     onClientTool: async (invocation: {
       name: string;
       params: Record<string, unknown>;
