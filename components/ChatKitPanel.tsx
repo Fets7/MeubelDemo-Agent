@@ -260,45 +260,74 @@ export function ChatKitPanel({
     },
     [isWorkflowConfigured, setErrorState]
   );
-
 const chatkit = useChatKit({
   api: { getClientSecret },
 
   theme: {
-  colorScheme: theme,
-  density: "compact",
-  radius: "soft",
-  typography: {
-    baseSize: 14,
-  },
-  color: {
-    accent: {
-      primary: "#3b82f6",
-      level: 1, // <-- toegevoegd om typefout te verhelpen
+    colorScheme: "light",       // lichte modus als standaard
+    radius: "pill",             // mooi afgeronde bubbels
+    density: "normal",          // normale spacing
+    color: {
+      accent: {
+        primary: "#2900f5",     // jouw paarsblauwe merk-kleur
+        level: 1,               // verplicht veld
+      },
     },
-  },
-  ...getThemeConfig(theme),
-},
-
-
-  startScreen: {
-    greeting: GREETING,
-    prompts: STARTER_PROMPTS,
+    typography: {
+      baseSize: 16,
+      fontFamily:
+        '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
+      fontFamilyMono:
+        'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
+      fontSources: [
+        {
+          family: "OpenAI Sans",
+          src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Regular.woff2",
+          weight: 400,
+          style: "normal",
+          display: "swap",
+        },
+        {
+          family: "OpenAI Sans",
+          src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Medium.woff2",
+          weight: 500,
+          style: "normal",
+          display: "swap",
+        },
+        {
+          family: "OpenAI Sans",
+          src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-SemiBold.woff2",
+          weight: 600,
+          style: "normal",
+          display: "swap",
+        },
+        {
+          family: "OpenAI Sans",
+          src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Bold.woff2",
+          weight: 700,
+          style: "normal",
+          display: "swap",
+        },
+      ],
+    },
+    ...getThemeConfig(theme),
   },
 
   composer: {
-    placeholder: PLACEHOLDER_INPUT,
     attachments: {
-      enabled: false,
+      enabled: false, // geen paperclip
     },
+  },
+
+  startScreen: {
+    greeting: "Waar kan ik je vandaag mee helpen?",
+    prompts: [],
   },
 
   threadItemActions: {
     feedback: false,
   },
 });
-
-
 
   const activeError = errors.session ?? errors.integration;
   const blockingError = errors.script ?? activeError;
