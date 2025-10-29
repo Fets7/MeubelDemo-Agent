@@ -268,14 +268,13 @@ export function ChatKitPanel({
       ...getThemeConfig(theme),
     },
     startScreen: {
-      greeting: GREETING,
-      prompts: STARTER_PROMPTS,
+      greeting: "Waar kan ik je mee helpen?"
     },
     composer: {
-      placeholder: PLACEHOLDER_INPUT,
+      placeholder: "Type hier je bericht",
       attachments: {
         // Enable attachments
-        enabled: true,
+        enabled: false,
       },
     },
     threadItemActions: {
@@ -313,7 +312,7 @@ export function ChatKitPanel({
       }
 
       return { success: false };
-    },
+    }, 
     onResponseEnd: () => {
       onResponseEnd();
     },
