@@ -265,19 +265,20 @@ export function ChatKitPanel({
   api: { getClientSecret },
 
   theme: {
-    colorScheme: theme,
+  colorScheme: theme,
+  density: "compact",      // compacter
+  radius: "soft",          // geldige waarde ✅
+  typography: {
+    baseSize: 14,          // kleiner lettertype
+  },
+  color: {
+    accent: {
+      primary: "#3b82f6",  // Fesi-AI blauw
+    },
+  },
+  ...getThemeConfig(theme),
+},
 
-    // compactere layout en kleinere tekst
-    density: "compact", // minder witruimte
-    radius: "md",       // minder afgeronde elementen
-    typography: {
-      baseSize: 14,     // kleiner lettertype (default is 16)
-    },
-    color: {
-      accent: {
-        primary: "#3b82f6", // jouw Fesi-AI blauw
-      },
-    },
 
     ...getThemeConfig(theme), // laat dit staan als fallback
   },
