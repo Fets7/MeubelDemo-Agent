@@ -343,7 +343,7 @@ const chatkit = useChatKit({
   }
 
   return (
-  <div className="relative flex h-[500px] w-[360px] flex-col overflow-hidden rounded-2xl bg-white shadow-lg transition-colors dark:bg-slate-900">
+  <div className="relative flex h-full w-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900">
       <ChatKit
         key={widgetInstanceKey}
         control={chatkit.control}
