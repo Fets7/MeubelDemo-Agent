@@ -261,27 +261,23 @@ export function ChatKitPanel({
     [isWorkflowConfigured, setErrorState]
   );
 
-  const chatkit = useChatKit({
+const chatkit = useChatKit({
   api: { getClientSecret },
 
   theme: {
-  colorScheme: theme,
-  density: "compact",      // compacter
-  radius: "soft",          // geldige waarde ✅
-  typography: {
-    baseSize: 14,          // kleiner lettertype
-  },
-  color: {
-    accent: {
-      primary: "#3b82f6",  // Fesi-AI blauw
+    colorScheme: theme,
+    density: "compact",
+    radius: "soft",
+    typography: {
+      baseSize: 14,
     },
-  },
-  ...getThemeConfig(theme),
-},
-
-
+    color: {
+      accent: {
+        primary: "#3b82f6",
+      },
+    },
     ...getThemeConfig(theme), // laat dit staan als fallback
-  },
+  }, // 👈 sluit het theme-object hier af ✅
 
   startScreen: {
     greeting: GREETING,
@@ -291,7 +287,7 @@ export function ChatKitPanel({
   composer: {
     placeholder: PLACEHOLDER_INPUT,
     attachments: {
-      enabled: false, // paperclip uit → lagere inputbalk
+      enabled: false,
     },
   },
 
@@ -299,6 +295,7 @@ export function ChatKitPanel({
     feedback: false,
   },
 });
+
 
 
   const activeError = errors.session ?? errors.integration;
