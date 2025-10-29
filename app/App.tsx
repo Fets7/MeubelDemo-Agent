@@ -1,18 +1,18 @@
 "use client";
 
-import { Chat } from "@openai/chatkit/react";
+import { Chat } from "@openai/chatkit";
 import type { ChatKitOptions } from "@openai/chatkit";
 
 const options: ChatKitOptions = {
   api: {
-    url: "/api/chat", // standaard endpoint uit ChatKit starter
+    url: "/api/chat",
   },
   theme: {
     colorScheme: "light",
+    density: "compact", // compacter design
     radius: "md",
-    density: "compact", // compacte layout (kleinere marges)
     typography: {
-      baseSize: 14, // kleiner lettertype
+      baseSize: 14, // kleiner font
     },
     color: {
       accent: {
@@ -30,6 +30,5 @@ const options: ChatKitOptions = {
 };
 
 export default function App() {
-  // ✅ geef de opties gewoon als prop door
   return <Chat options={options} />;
 }
