@@ -262,73 +262,43 @@ export function ChatKitPanel({
   );
 
   const chatkit = useChatKit({
-    api: { getClientSecret },
-    theme: {
-      colorScheme: theme,
-      ...getThemeConfig(theme),
+  api: { getClientSecret },
+
+  theme: {
+    colorScheme: theme,
+
+    // compactere layout en kleinere tekst
+    density: "compact", // minder witruimte
+    radius: "md",       // minder afgeronde elementen
+    typography: {
+      baseSize: 14,     // kleiner lettertype (default is 16)
     },
-    startScreen: {
-      greeting: GREETING,
-      prompts: STARTER_PROMPTS,
-    },
-    composer: {
-      placeholder: PLACEHOLDER_INPUT,
-      attachments: {
-        // Enable attachments
-        enabled: true,
+    color: {
+      accent: {
+        primary: "#3b82f6", // jouw Fesi-AI blauw
       },
     },
-    threadItemActions: {
-      feedback: false,
-    },
-    onClientTool: async (invocation: {
-      name: string;
-      params: Record<string, unknown>;
-    }) => {
-      if (invocation.name === "switch_theme") {
-        const requested = invocation.params.theme;
-        if (requested === "light" || requested === "dark") {
-          if (isDev) {
-            console.debug("[ChatKitPanel] switch_theme", requested);
-          }
-          onThemeRequest(requested);
-          return { success: true };
-        }
-        return { success: false };
-      }
 
-      if (invocation.name === "record_fact") {
-        const id = String(invocation.params.fact_id ?? "");
-        const text = String(invocation.params.fact_text ?? "");
-        if (!id || processedFacts.current.has(id)) {
-          return { success: true };
-        }
-        processedFacts.current.add(id);
-        void onWidgetAction({
-          type: "save",
-          factId: id,
-          factText: text.replace(/\s+/g, " ").trim(),
-        });
-        return { success: true };
-      }
+    ...getThemeConfig(theme), // laat dit staan als fallback
+  },
 
-      return { success: false };
+  startScreen: {
+    greeting: GREETING,
+    prompts: STARTER_PROMPTS,
+  },
+
+  composer: {
+    placeholder: PLACEHOLDER_INPUT,
+    attachments: {
+      enabled: false, // paperclip uit → lagere inputbalk
     },
-    onResponseEnd: () => {
-      onResponseEnd();
-    },
-    onResponseStart: () => {
-      setErrorState({ integration: null, retryable: false });
-    },
-    onThreadChange: () => {
-      processedFacts.current.clear();
-    },
-    onError: ({ error }: { error: unknown }) => {
-      // Note that Chatkit UI handles errors for your users.
-      // Thus, your app code doesn't need to display errors on UI.
-      console.error("ChatKit error", error);
-    },
-  });
+  },
+
+  threadItemActions: {
+    feedback: false,
+  },
+});
+
 
   const activeError = errors.session ?? errors.integration;
   const blockingError = errors.script ?? activeError;
