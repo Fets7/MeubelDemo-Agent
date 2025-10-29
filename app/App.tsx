@@ -1,34 +1,34 @@
 "use client";
 
-import { useCallback } from "react";
-import { ChatKitPanel, type FactAction } from "@/components/ChatKitPanel";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { Chat } from "@openai/chatkit/react";
+import type { ChatKitOptions } from "@openai/chatkit";
+
+const options: ChatKitOptions = {
+  api: {
+    url: "/api/chat", // standaard route van ChatKit Starter
+  },
+  theme: {
+    colorScheme: "light",
+    density: "compact", // compactere layout
+    radius: "md", // iets minder afgerond
+    typography: {
+      baseSize: 14, // kleiner font
+    },
+    color: {
+      accent: {
+        primary: "#3b82f6", // Fesi-AI blauw
+      },
+    },
+  },
+  composer: {
+    attachments: { enabled: false },
+  },
+  startScreen: {
+    greeting: "Waar kan ik je vandaag mee helpen?",
+    prompts: [],
+  },
+};
 
 export default function App() {
-  const { scheme, setScheme } = useColorScheme();
-
-  const handleWidgetAction = useCallback(async (action: FactAction) => {
-    if (process.env.NODE_ENV !== "production") {
-      console.info("[ChatKitPanel] widget action", action);
-    }
-  }, []);
-
-  const handleResponseEnd = useCallback(() => {
-    if (process.env.NODE_ENV !== "production") {
-      console.debug("[ChatKitPanel] response end");
-    }
-  }, []);
-
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-end bg-slate-100 dark:bg-slate-950">
-      <div className="mx-auto w-full max-w-5xl">
-        <ChatKitPanel
-          theme={scheme}
-          onWidgetAction={handleWidgetAction}
-          onResponseEnd={handleResponseEnd}
-          onThemeRequest={setScheme}
-        />
-      </div>
-    </main>
-  );
+  return <Chat options={options} />;
 }
