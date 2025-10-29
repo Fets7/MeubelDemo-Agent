@@ -260,74 +260,75 @@ export function ChatKitPanel({
     },
     [isWorkflowConfigured, setErrorState]
   );
-const chatkit = useChatKit({
-  api: { getClientSecret },
 
-  theme: {
-    colorScheme: "light",       // lichte modus als standaard
-    radius: "pill",             // mooi afgeronde bubbels
-    density: "normal",          // normale spacing
-    color: {
-      accent: {
-        primary: "#2900f5",     // jouw paarsblauwe merk-kleur
-        level: 1,               // verplicht veld
+  const chatkit = useChatKit({
+    api: { getClientSecret },
+    theme: {
+      colorScheme: theme,
+      ...getThemeConfig(theme),
+    },
+    startScreen: {
+      greeting: GREETING,
+      prompts: STARTER_PROMPTS,
+    },
+    composer: {
+      placeholder: PLACEHOLDER_INPUT,
+      attachments: {
+        // Enable attachments
+        enabled: true,
       },
     },
-    typography: {
-      baseSize: 16,
-      fontFamily:
-        '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
-      fontFamilyMono:
-        'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
-      fontSources: [
-        {
-          family: "OpenAI Sans",
-          src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Regular.woff2",
-          weight: 400,
-          style: "normal",
-          display: "swap",
-        },
-        {
-          family: "OpenAI Sans",
-          src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Medium.woff2",
-          weight: 500,
-          style: "normal",
-          display: "swap",
-        },
-        {
-          family: "OpenAI Sans",
-          src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-SemiBold.woff2",
-          weight: 600,
-          style: "normal",
-          display: "swap",
-        },
-        {
-          family: "OpenAI Sans",
-          src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Bold.woff2",
-          weight: 700,
-          style: "normal",
-          display: "swap",
-        },
-      ],
+    threadItemActions: {
+      feedback: false,
     },
-    ...getThemeConfig(theme),
-  },
+    onClientTool: async (invocation: {
+      name: string;
+      params: Record<string, unknown>;
+    }) => {
+      if (invocation.name === "switch_theme") {
+        const requested = invocation.params.theme;
+        if (requested === "light" || requested === "dark") {
+          if (isDev) {
+            console.debug("[ChatKitPanel] switch_theme", requested);
+          }
+          onThemeRequest(requested);
+          return { success: true };
+        }
+        return { success: false };
+      }
 
-  composer: {
-    attachments: {
-      enabled: false, // geen paperclip
+      if (invocation.name === "record_fact") {
+        const id = String(invocation.params.fact_id ?? "");
+        const text = String(invocation.params.fact_text ?? "");
+        if (!id || processedFacts.current.has(id)) {
+          return { success: true };
+        }
+        processedFacts.current.add(id);
+        void onWidgetAction({
+          type: "save",
+          factId: id,
+          factText: text.replace(/\s+/g, " ").trim(),
+        });
+        return { success: true };
+      }
+
+      return { success: false };
     },
-  },
-
-  startScreen: {
-    greeting: "Waar kan ik je vandaag mee helpen?",
-    prompts: [],
-  },
-
-  threadItemActions: {
-    feedback: false,
-  },
-});
+    onResponseEnd: () => {
+      onResponseEnd();
+    },
+    onResponseStart: () => {
+      setErrorState({ integration: null, retryable: false });
+    },
+    onThreadChange: () => {
+      processedFacts.current.clear();
+    },
+    onError: ({ error }: { error: unknown }) => {
+      // Note that Chatkit UI handles errors for your users.
+      // Thus, your app code doesn't need to display errors on UI.
+      console.error("ChatKit error", error);
+    },
+  });
 
   const activeError = errors.session ?? errors.integration;
   const blockingError = errors.script ?? activeError;
@@ -343,7 +344,7 @@ const chatkit = useChatKit({
   }
 
   return (
-  <div className="relative pb-8 flex h-[90vh] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
+    <div className="relative pb-8 flex h-[90vh] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
       <ChatKit
         key={widgetInstanceKey}
         control={chatkit.control}
